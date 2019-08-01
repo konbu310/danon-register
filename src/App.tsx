@@ -1,26 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react";
+import { FC, useEffect, useRef, useState } from "react";
+import { injectGlobal, css, cx } from "emotion";
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+injectGlobal`
+  body {
+    margin: 0;
+    background: #000;
+  }
+  
+  video {
+    display: block;
+    width: 100%;
+  }
+`;
 
-export default App;
+export const App: FC = () => {
+  const pref = {
+    video: true,
+    audio: false
+  };
+
+  useEffect(() => {
+    const videoElm = document.getElementById("video") as HTMLVideoElement;
+
+    videoElm &&
+      navigator.mediaDevices
+        .getUserMedia(pref)
+        .then(stream => {
+          videoElm.srcObject = stream;
+        })
+        .catch(err => {
+          console.error(err);
+        });
+  }, []);
+
+  return <video id="video" autoPlay playsInline></video>;
+};
